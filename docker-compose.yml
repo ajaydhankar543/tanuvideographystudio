@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: tanuvideography-backend
+    container_name: tanu-backend
     environment:
       - NODE_ENV=production
     networks:
@@ -16,25 +16,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: tanuvideography-frontend
-    depends_on:
-      - backend
-    networks:
-      - app-network
-    restart: unless-stopped
-    expose:
-      - "80"
-
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    container_name: tanuvideography-nginx
+    container_name: tanu-frontend
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
-      - frontend
     networks:
       - app-network
     restart: unless-stopped
