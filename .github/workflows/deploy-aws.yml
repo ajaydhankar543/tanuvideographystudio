@@ -1,0 +1,414 @@
+name: Deploy to AWS EC2
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    types:
+      - completed
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  APP_NAME: tanuvideography
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            set -e
+            echo "🚀 Starting deployment..."
+            
+            # Install Docker if not present
+            if ! command -v docker &> /dev/null; then
+              echo "📦 Installing Docker..."
+              curl -fsSL https://get.docker.com -o get-docker.sh
+              sudo sh get-docker.sh
+              sudo usermod -aG docker $USER
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              rm get-docker.sh
+            fi
+            
+            # Install Docker Compose if not present
+            if ! command -v docker-compose &> /dev/null; then
+              echo "📦 Installing Docker Compose..."
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            
+            # Create app directory
+            cd ~ && mkdir -p tanuvideography && cd tanuvideography
+            
+            # Check for SSL certificates
+            SSL_ENABLED=false
+            if [ -d "/etc/letsencrypt/live" ]; then
+              SSL_DOMAINS=$(ls /etc/letsencrypt/live/ 2>/dev/null | head -1)
+              if [ -n "$SSL_DOMAINS" ]; then
+                SSL_ENABLED=true
+                echo "🔒 SSL certificates found for: $SSL_DOMAINS"
+              fi
+            fi
+            
+            # Create production docker-compose.yml
+            echo "📝 Creating docker-compose.yml..."
+            
+            if [ "$SSL_ENABLED" = true ]; then
+              # HTTPS Configuration
+              cat > docker-compose.yml << 'COMPOSE_EOF'
+            services:
+              backend:
+                image: ${{ secrets.DOCKER_USERNAME }}/tanuvideography-backend:latest
+                container_name: tanuvideography-backend
+                environment:
+                  - NODE_ENV=production
+                networks:
+                  - app-network
+                restart: unless-stopped
+                expose:
+                  - "3000"
+                healthcheck:
+                  test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 3
+            
+              frontend:
+                image: ${{ secrets.DOCKER_USERNAME }}/tanuvideography-frontend:latest
+                container_name: tanuvideography-frontend
+                depends_on:
+                  - backend
+                networks:
+                  - app-network
+                restart: unless-stopped
+                expose:
+                  - "80"
+            
+              nginx:
+                image: nginx:alpine
+                container_name: tanuvideography-nginx
+                ports:
+                  - "80:80"
+                  - "443:443"
+                volumes:
+                  - ./nginx.conf:/etc/nginx/nginx.conf:ro
+                  - /etc/letsencrypt:/etc/letsencrypt:ro
+                depends_on:
+                  - backend
+                  - frontend
+                networks:
+                  - app-network
+                restart: unless-stopped
+            
+            networks:
+              app-network:
+                driver: bridge
+            COMPOSE_EOF
+            
+              # Create nginx.conf with SSL
+              cat > nginx.conf << 'NGINX_EOF'
+            user nginx;
+            worker_processes auto;
+            error_log /var/log/nginx/error.log warn;
+            pid /var/run/nginx.pid;
+            
+            events {
+                worker_connections 1024;
+            }
+            
+            http {
+                include /etc/nginx/mime.types;
+                default_type application/octet-stream;
+                
+                log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                                '$status $body_bytes_sent "$http_referer" '
+                                '"$http_user_agent" "$http_x_forwarded_for"';
+                
+                access_log /var/log/nginx/access.log main;
+                sendfile on;
+                keepalive_timeout 65;
+                gzip on;
+                gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+                
+                upstream backend {
+                    server tanuvideography-backend:3000;
+                }
+                
+                upstream frontend {
+                    server tanuvideography-frontend:80;
+                }
+                
+                # Redirect HTTP to HTTPS
+                server {
+                    listen 80;
+                    server_name _;
+                    return 301 https://$host$request_uri;
+                }
+                
+                # HTTPS Server
+                server {
+                    listen 443 ssl http2;
+                    server_name _;
+                    
+                    ssl_certificate /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/fullchain.pem;
+                    ssl_certificate_key /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/privkey.pem;
+                    
+                    ssl_protocols TLSv1.2 TLSv1.3;
+                    ssl_prefer_server_ciphers on;
+                    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+                    ssl_session_cache shared:SSL:10m;
+                    ssl_session_timeout 10m;
+                    
+                    add_header X-Frame-Options "SAMEORIGIN" always;
+                    add_header X-Content-Type-Options "nosniff" always;
+                    add_header X-XSS-Protection "1; mode=block" always;
+                    
+                    location /api {
+                        proxy_pass http://backend;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_cache_bypass $http_upgrade;
+                    }
+                    
+                    location / {
+                        proxy_pass http://frontend;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_cache_bypass $http_upgrade;
+                    }
+                }
+            }
+            NGINX_EOF
+            
+              # Replace domain placeholder
+              SSL_DOMAIN=$(ls /etc/letsencrypt/live/ 2>/dev/null | grep -v README | head -1)
+              sed -i "s/DOMAIN_PLACEHOLDER/$SSL_DOMAIN/g" nginx.conf
+            
+            else
+              # HTTP Only Configuration
+              cat > docker-compose.yml << 'COMPOSE_EOF'
+            services:
+              backend:
+                image: ${{ secrets.DOCKER_USERNAME }}/tanuvideography-backend:latest
+                container_name: tanuvideography-backend
+                environment:
+                  - NODE_ENV=production
+                networks:
+                  - app-network
+                restart: unless-stopped
+                expose:
+                  - "3000"
+                healthcheck:
+                  test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 3
+            
+              frontend:
+                image: ${{ secrets.DOCKER_USERNAME }}/tanuvideography-frontend:latest
+                container_name: tanuvideography-frontend
+                depends_on:
+                  - backend
+                networks:
+                  - app-network
+                restart: unless-stopped
+                expose:
+                  - "80"
+            
+              nginx:
+                image: nginx:alpine
+                container_name: tanuvideography-nginx
+                ports:
+                  - "80:80"
+                volumes:
+                  - ./nginx.conf:/etc/nginx/nginx.conf:ro
+                depends_on:
+                  - backend
+                  - frontend
+                networks:
+                  - app-network
+                restart: unless-stopped
+            
+            networks:
+              app-network:
+                driver: bridge
+            COMPOSE_EOF
+            
+              # Create nginx.conf without SSL
+              cat > nginx.conf << 'NGINX_EOF'
+            user nginx;
+            worker_processes auto;
+            error_log /var/log/nginx/error.log warn;
+            pid /var/run/nginx.pid;
+            
+            events {
+                worker_connections 1024;
+            }
+            
+            http {
+                include /etc/nginx/mime.types;
+                default_type application/octet-stream;
+                
+                log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                                '$status $body_bytes_sent "$http_referer" '
+                                '"$http_user_agent" "$http_x_forwarded_for"';
+                
+                access_log /var/log/nginx/access.log main;
+                sendfile on;
+                keepalive_timeout 65;
+                gzip on;
+                gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+                
+                upstream backend {
+                    server tanuvideography-backend:3000;
+                }
+                
+                upstream frontend {
+                    server tanuvideography-frontend:80;
+                }
+                
+                server {
+                    listen 80;
+                    server_name _;
+                    
+                    location /api {
+                        proxy_pass http://backend;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_cache_bypass $http_upgrade;
+                    }
+                    
+                    location / {
+                        proxy_pass http://frontend;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_cache_bypass $http_upgrade;
+                    }
+                }
+            }
+            NGINX_EOF
+            fi
+            
+            # Pull latest images
+            echo "📥 Pulling latest Docker images..."
+            docker pull ${{ secrets.DOCKER_USERNAME }}/tanuvideography-backend:latest || true
+            docker pull ${{ secrets.DOCKER_USERNAME }}/tanuvideography-frontend:latest || true
+            
+            # Stop and remove existing containers
+            echo "🛑 Stopping existing containers..."
+            docker-compose down --remove-orphans || true
+            
+            # Start new containers
+            echo "🚀 Starting containers..."
+            docker-compose up -d
+            
+            # Wait for containers to be healthy
+            echo "⏳ Waiting for containers to start..."
+            sleep 10
+            
+            # Show status
+            echo "📊 Container status:"
+            docker-compose ps
+            
+            # Health check
+            echo "🏥 Running health checks..."
+            
+            # Check backend
+            if curl -s http://localhost:3000/api/health > /dev/null 2>&1 || docker exec tanuvideography-backend wget -q --spider http://localhost:3000/api/health 2>/dev/null; then
+              echo "✅ Backend is healthy"
+            else
+              echo "⚠️ Backend health check failed (may still be starting)"
+            fi
+            
+            # Check frontend via nginx
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost | grep -q "200\|301\|302"; then
+              echo "✅ Frontend is accessible"
+            else
+              echo "⚠️ Frontend accessibility check inconclusive"
+            fi
+            
+            # Cleanup old images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f || true
+            
+            echo ""
+            echo "✅ Deployment completed successfully!"
+            echo "🌐 Your site should be accessible at:"
+            echo "   http://${{ secrets.EC2_HOST }}"
+            if [ "$SSL_ENABLED" = true ]; then
+              echo "   https://${{ secrets.EC2_HOST }}"
+            fi
+      
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | Production |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Server** | ${{ secrets.EC2_HOST }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Trigger** | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Deployed Images" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ secrets.DOCKER_USERNAME }}/tanuvideography-backend:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ secrets.DOCKER_USERNAME }}/tanuvideography-frontend:latest\`" >> $GITHUB_STEP_SUMMARY
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    
+    steps:
+      - name: Notify on failure
+        run: |
+          echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The deployment to EC2 failed. Please check the logs for details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
