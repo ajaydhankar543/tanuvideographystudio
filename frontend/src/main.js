@@ -9,7 +9,7 @@ let currentPage = 'home'
 // HELPER FUNCTIONS
 // ============================================
 
-function createNavButton(id, emoji, label, page) {
+function createNavButton(id, emoji, label,  page) {
   const isActive = currentPage === page
   const activeClass = isActive ? getButtonActiveClass(page) : 'hover:bg-white/5'
   const glowHTML = isActive ? `<div class="nav-button-glow ${page}"></div>` : ''
