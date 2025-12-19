@@ -1,0 +1,39 @@
+services:
+  backend:
+    image: abhaypratapsingh7704866570/tanuvideography-backend:latest
+    container_name: tanuvideography-backend
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  frontend:
+    image: abhaypratapsingh7704866570/tanuvideography-frontend:latest
+    container_name: tanuvideography-frontend
+    networks:
+      - app-network
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: tanuvideography-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
