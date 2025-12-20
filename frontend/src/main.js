@@ -118,6 +118,79 @@ function getHomePageHTML() {
         </div>
       </div>
 
+      <!-- About Me Profile Card -->
+      <div class="profile-section">
+        <div class="profile-card">
+          <div class="profile-card-bg"></div>
+          <div class="profile-card-glow"></div>
+          
+          <div class="profile-content">
+            <!-- Profile Image -->
+            <div class="profile-image-wrapper">
+              <div class="profile-image-ring"></div>
+              <div class="profile-image-ring ring-2"></div>
+              <div class="profile-image-container">
+                <img src="/Profile.JPG" alt="Abhay - Cinematographer" class="profile-image" />
+                <div class="profile-image-overlay"></div>
+              </div>
+              <div class="profile-verified">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <!-- Profile Info -->
+            <div class="profile-info">
+              <div class="profile-badge-row">
+                <span class="profile-role-badge">Founder & Cinematographer</span>
+              </div>
+              
+              <h2 class="profile-name">Abhay Pratap Singh</h2>
+              
+              <p class="profile-tagline">
+                Crafting cinematic stories that capture the <span class="text-rose-400">magic</span> of your special moments
+              </p>
+              
+              <div class="profile-details">
+                <div class="profile-detail-item">
+                  <span class="profile-detail-icon">🎬</span>
+                  <span>5+ Years Experience</span>
+                </div>
+                <div class="profile-detail-item">
+                  <span class="profile-detail-icon">📍</span>
+                  <span>Based in India</span>
+                </div>
+                <div class="profile-detail-item">
+                  <span class="profile-detail-icon">✈️</span>
+                  <span>Available Worldwide</span>
+                </div>
+              </div>
+              
+              <div class="profile-equipment">
+                <span class="equipment-tag">Sony FX3</span>
+                <span class="equipment-tag">DJI Ronin</span>
+                <span class="equipment-tag">4K Cinema</span>
+                <span class="equipment-tag">Drone</span>
+              </div>
+              
+              <div class="profile-actions">
+                <a href="https://www.instagram.com/TANU_VIDEOGRAPHY_STUDIO" target="_blank" class="profile-social-btn instagram">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="https://wa.me/917704866570" target="_blank" class="profile-social-btn whatsapp">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+                <button onclick="switchPage('backend')" class="profile-hire-btn">
+                  <span>Let's Work Together</span>
+                  <span class="hire-arrow">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="quick-contact-section">
         <h2 class="quick-contact-title">📞 Get In Touch</h2>
         <div class="quick-contact-grid">
@@ -197,81 +270,167 @@ function getHomePageHTML() {
   `
 }
 
+// Portfolio video data - Add your YouTube/Vimeo video IDs here
+const portfolioVideos = [
+  {
+    id: 1,
+    title: 'Romantic Wedding Film',
+    subtitle: 'Rahul & Priya',
+    thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
+    videoUrl: 'https://youtu.be/J-JcxmSP3fM', // Replace with your video
+    category: 'Wedding',
+    duration: '4:32',
+    tags: ['4K', 'Cinematic', 'Drone'],
+    gradient: 'from-rose-500 to-pink-600'
+  },
+  {
+    id: 2,
+    title: 'Grand Celebration',
+    subtitle: 'Amit & Neha',
+    thumbnail: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80',
+    videoUrl: 'https://youtu.be/3I-PINTueA0', // Replace with your video
+    category: 'Wedding',
+    duration: '5:18',
+    tags: ['4K', 'Traditional', 'Multi-Cam'],
+    gradient: 'from-amber-500 to-orange-600'
+  },
+  {
+    id: 3,
+    title: 'Dreamy Pre-Wedding',
+    subtitle: 'Vikram & Ananya',
+    thumbnail: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80',
+    videoUrl: 'https://youtu.be/XnrLSoAOXxY', // Replace with your video
+    category: 'Pre-Wedding',
+    duration: '3:45',
+    tags: ['4K', 'Romantic', 'Outdoor'],
+    gradient: 'from-purple-500 to-indigo-600'
+  }
+]
+
+function createVideoCard(video, index) {
+  return `
+    <div class="video-card" data-delay="${0.1 + index * 0.15}s">
+      <div class="video-card-inner">
+        <!-- Thumbnail Container -->
+        <div class="video-thumbnail-container" onclick="openVideoModal(${video.id})">
+          <img src="${video.thumbnail}" alt="${video.title}" class="video-thumbnail" />
+          
+          <!-- Gradient Overlay -->
+          <div class="video-overlay bg-gradient-to-t ${video.gradient}"></div>
+          
+          <!-- Play Button -->
+          <div class="video-play-btn">
+            <div class="play-btn-ring"></div>
+            <div class="play-btn-inner">
+              <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Duration Badge -->
+          <div class="video-duration">${video.duration}</div>
+          
+          <!-- Category Badge -->
+          <div class="video-category bg-gradient-to-r ${video.gradient}">${video.category}</div>
+        </div>
+        
+        <!-- Video Info -->
+        <div class="video-info">
+          <div class="video-info-header">
+            <h3 class="video-title">${video.title}</h3>
+            <p class="video-subtitle">${video.subtitle}</p>
+          </div>
+          
+          <div class="video-tags-container">
+            ${video.tags.map(tag => `<span class="video-tag-pill">${tag}</span>`).join('')}
+          </div>
+          
+          <button class="video-watch-btn bg-gradient-to-r ${video.gradient}" onclick="openVideoModal(${video.id})">
+            <span>Watch Film</span>
+            <svg class="watch-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 function getPortfolioPageHTML() {
   return `
     <div id="frontend-section">
-      <div class="page-header-simple">
-        <h1 class="section-title">
-          <span class="title-gradient-purple">Our Portfolio</span>
-        </h1>
-        <p class="section-description">Stunning cinematic moments from real weddings and events</p>
-      </div>
-
-      <div class="portfolio-grid">
-        <div class="portfolio-card" data-delay="0.1s">
-          <div class="portfolio-card-content gradient-rose">
-            <div class="portfolio-card-header">
-              <div class="portfolio-icon gradient-rose-bg">💍</div>
-              <div>
-                <h2 class="portfolio-title">Wedding Films</h2>
-                <p class="portfolio-subtitle">Love stories that last forever</p>
-              </div>
-            </div>
-            
-            <div class="portfolio-video-placeholder gradient-rose-border">
-              <div class="video-placeholder-content">
-                <div class="video-icon">🎥</div>
-                <p class="video-text">Cinematic Wedding Highlight</p>
-                <div class="video-tags">
-                  <span class="video-tag tag-rose">4K</span>
-                  <span class="video-tag tag-pink">Drone</span>
-                </div>
-              </div>
-            </div>
-
-            <p class="portfolio-description">
-              From the first look to the last dance, we capture every magical moment of your special day with cinematic excellence.
-            </p>
+      <!-- Hero Section -->
+      <div class="portfolio-hero">
+        <div class="portfolio-hero-bg"></div>
+        <div class="portfolio-hero-content">
+          <div class="portfolio-badge">
+            <span class="portfolio-badge-dot"></span>
+            <span>Featured Work</span>
           </div>
-        </div>
-
-        <div class="portfolio-card" data-delay="0.2s">
-          <div class="portfolio-card-content gradient-amber">
-            <div class="portfolio-card-header">
-              <div class="portfolio-icon gradient-amber-bg">🎉</div>
-              <div>
-                <h2 class="portfolio-title">Event Coverage</h2>
-                <p class="portfolio-subtitle">Professional event videography</p>
-              </div>
-            </div>
-
-            <div class="portfolio-video-placeholder gradient-amber-border">
-              <div class="video-placeholder-content">
-                <div class="video-icon">📹</div>
-                <p class="video-text">Corporate & Event Films</p>
-                <div class="video-tags">
-                  <span class="video-tag tag-amber">Multi-Cam</span>
-                  <span class="video-tag tag-yellow">Live</span>
-                </div>
-              </div>
-            </div>
-
-            <p class="portfolio-description">
-              Corporate events, birthdays, anniversaries, and celebrations - we document your events with professional multi-camera setups.
-            </p>
-          </div>
+          <h1 class="portfolio-main-title">
+            <span class="title-line">Our Cinematic</span>
+            <span class="title-line title-gradient-shine">Portfolio</span>
+          </h1>
+          <p class="portfolio-hero-desc">
+            Every love story deserves to be told beautifully. Watch our handcrafted 
+            <span class="text-rose-400">wedding films</span> and 
+            <span class="text-amber-400">event highlights</span>.
+          </p>
         </div>
       </div>
 
-      <div class="services-banner">
-        <div class="services-banner-bg"></div>
-        <div class="services-banner-content">
-          <div class="services-icon">🎬</div>
-          <div class="services-text">
-            <p class="services-title">Full-Service Videography</p>
-            <p class="services-subtitle">Pre-wedding shoots • Highlights • Full-day coverage • Drone cinematography • Same-day edits</p>
+      <!-- Video Grid -->
+      <div class="video-grid-section">
+        <div class="video-grid">
+          ${portfolioVideos.map((video, index) => createVideoCard(video, index)).join('')}
+        </div>
+      </div>
+
+      <!-- Stats Banner -->
+      <div class="portfolio-stats-banner">
+        <div class="portfolio-stat">
+          <span class="portfolio-stat-number">100+</span>
+          <span class="portfolio-stat-label">Films Created</span>
+        </div>
+        <div class="portfolio-stat-divider"></div>
+        <div class="portfolio-stat">
+          <span class="portfolio-stat-number">4K</span>
+          <span class="portfolio-stat-label">Ultra HD Quality</span>
+        </div>
+        <div class="portfolio-stat-divider"></div>
+        <div class="portfolio-stat">
+          <span class="portfolio-stat-number">300+</span>
+          <span class="portfolio-stat-label">Happy Couples</span>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="portfolio-cta">
+        <div class="portfolio-cta-bg"></div>
+        <div class="portfolio-cta-content">
+          <div class="portfolio-cta-icon">🎬</div>
+          <h2 class="portfolio-cta-title">Ready to Create Your Story?</h2>
+          <p class="portfolio-cta-desc">Let's capture your special moments in cinematic excellence</p>
+          <button onclick="switchPage('backend')" class="portfolio-cta-btn">
+            <span>Book Your Session</span>
+            <span class="cta-btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Modal -->
+      <div id="video-modal" class="video-modal" onclick="closeVideoModal(event)">
+        <div class="video-modal-content">
+          <button class="video-modal-close" onclick="closeVideoModal(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <div class="video-modal-player">
+            <iframe id="video-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
           </div>
-          <button onclick="switchPage('backend')" class="services-btn">Book Now</button>
         </div>
       </div>
     </div>
@@ -515,5 +674,54 @@ function applyAnimations() {
 // ============================================
 
 window.switchPage = switchPage
+
+// Video Modal Functions
+function openVideoModal(videoId) {
+  const video = portfolioVideos.find(v => v.id === videoId)
+  if (!video) return
+  
+  const modal = document.getElementById('video-modal')
+  const iframe = document.getElementById('video-iframe')
+  
+  // Convert YouTube URLs to embed format
+  let embedUrl = video.videoUrl
+  
+  // Handle youtu.be short links
+  if (embedUrl.includes('youtu.be/')) {
+    const videoIdMatch = embedUrl.match(/youtu\.be\/([a-zA-Z0-9_-]+)/)
+    if (videoIdMatch) {
+      embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`
+    }
+  }
+  // Handle youtube.com/watch links
+  else if (embedUrl.includes('youtube.com/watch')) {
+    const videoIdMatch = embedUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)
+    if (videoIdMatch) {
+      embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`
+    }
+  }
+  
+  // Add autoplay parameter
+  iframe.src = embedUrl + '?autoplay=1'
+  modal.classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeVideoModal(event) {
+  if (event.target.closest('.video-modal-player') && !event.target.closest('.video-modal-close')) {
+    return
+  }
+  
+  const modal = document.getElementById('video-modal')
+  const iframe = document.getElementById('video-iframe')
+  
+  modal.classList.remove('active')
+  iframe.src = ''
+  document.body.style.overflow = ''
+}
+
+// Make video functions globally accessible
+window.openVideoModal = openVideoModal
+window.closeVideoModal = closeVideoModal
 
 document.addEventListener('DOMContentLoaded', initApp)
